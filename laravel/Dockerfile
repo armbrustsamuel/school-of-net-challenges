@@ -9,13 +9,15 @@ RUN rm -rf /var/www/html
 # composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-#RUN composer install && \
-#            cp .env.example .env && \
-#            php artisan key:generate && \
-#            php artisan config:cache  
-
-# COPY . /var/www 
+COPY . /var/www 
 RUN ln -s public html
 
-EXPOSE 9000 
-ENTRYPOINT ["php-fpm"]
+RUN composer install && \
+           cp .env.example .env && \
+           php artisan key:generate && \
+           php artisan config:cache  
+
+
+EXPOSE 9000
+EXPOSE 8000
+ENTRYPOINT ["php", "artisan", "serve", "--host", "0.0.0.0:8000"]
